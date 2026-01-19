@@ -1,5 +1,4 @@
 import streamlit as st
-from secdemo.state import init_session
 from secdemo.ui import render_app
 
 st.set_page_config(
