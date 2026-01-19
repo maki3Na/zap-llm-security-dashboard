@@ -6,5 +6,4 @@ st.set_page_config(
     layout="wide",
 )
 
-init_session()
 render_app()
