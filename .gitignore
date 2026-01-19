@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+
+# Local data / secrets
+secdemo_data/
+models/
+data/
+output/
+
+# Cache
+.ruff_cache/
+
+# Logs / env
+*.log
+.env
+
+# OS
+.DS_Store
+Thumbs.db
