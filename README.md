@@ -33,6 +33,7 @@ Webアプリケーションのセキュリティ診断では、OWASP ZAP 等の�
 - OWASP ZAP API から履歴・アラートをリアルタイム取得
 - URL フィルタリングによる対象絞り込み
 - 履歴とアラートの連動表示
+- リクエスト / レスポンス詳細の可視化
 
 ### 🤖 AI（LLM）による支援
 - アラート単位の AI 解説（守る側視点）
@@ -40,10 +41,10 @@ Webアプリケーションのセキュリティ診断では、OWASP ZAP 等の�
 - ZAP・ログ・外部ツール結果を統合した総合リスク評価
 - 診断結果を Markdown 形式のレポートとして自動生成
 
-### 🛠 外部ツール統合
+### 🛠 外部ツール統合（安全モード）
 - sqlmap（低 risk / level に制限した安全実行）
 - nmap（ポート・サービス検出）
-- 実行前に明示的な同意チェックを必須化
+- 実行前に **明示的な同意チェック** を必須化
 
 ### 📝 レポート生成
 - AI による診断レポート生成（Markdown）
@@ -54,17 +55,16 @@ Webアプリケーションのセキュリティ診断では、OWASP ZAP 等の�
 
 ## システム構成
 
-[OWASP ZAP]
+```
+[ OWASP ZAP ]
 ↓ API
-[Streamlit UI]
+[ Streamlit UI ]
 ├─ History / Alerts
 ├─ External Tools (sqlmap / nmap)
 ├─ AI Analysis / Summary
 ↓
-[Ollama (Local LLM)]
-
-yaml
-コードをコピーする
+[ Ollama (Local LLM) ]
+```
 
 - LLM はローカル環境（Ollama）で実行
 - APIキーや診断情報を外部に送信しない構成
@@ -75,20 +75,97 @@ yaml
 - 外部ツールは **明示的な同意チェック必須**
 - 危険なオプションは使用せず、安全寄りの設定のみ許可
 - AIには攻撃手順・PoC・悪用方法を生成させない設計
-- 個人利用前提のローカル保存（設定ファイル）
+- 設定情報はローカル保存（個人利用前提）
 
 ---
 
-## 使用技術
-- Python
-- Streamlit
-- OWASP ZAP API
-- Ollama（Local LLM）
-- sqlmap / nmap
+## 動作環境 / バージョン
+
+### 実行環境
+- OS: Windows 10 / 11
+- Python: **3.11.9**
+- pip: **24.0**
+- OWASP ZAP: 2.x（例: 2.17.0）
+- Ollama: **0.14.2**
+- Browser: Chrome（ZAPプロキシ経由推奨）
+
+---
+
+## インストール手順（Windows）
+
+### 1. リポジトリの取得
+```bat
+git clone https://github.com/maki3Na/zap-llm-security-dashboard.git
+cd zap-llm-security-dashboard
+```
+
+### 2. 仮想環境の作成・有効化
+```bat
+python -m venv venv
+venv\Scripts\activate
+```
+
+### 3. 依存ライブラリのインストール
+```bat
+pip install -r requirements.txt
+```
+
+※ 完全な依存関係は `requirements-lock.txt` に記載しています。
+
+### 4. Ollama（ローカルLLM）の準備
+
+Ollama を起動し、以下で動作確認：
+
+```bat
+curl http://127.0.0.1:11434
+curl http://127.0.0.1:11434/api/tags
+```
+
+UI 上でモデルを選択（例: gemma2 系）
+
+---
+
+## 起動方法
+
+### OWASP ZAP
+ZAP を GUI で起動
+- Proxy: http://127.0.0.1:8080
+- API Key を有効化
+
+### ダッシュボード
+```bat
+streamlit run app3.py
+```
+
+ブラウザで以下にアクセス：
+👉 http://localhost:8501
+
+---
+
+## 使用ライブラリ（主要）
+
+| ライブラリ | バージョン |
+|-----------|-----------|
+| streamlit | 1.52.2 |
+| streamlit-aggrid | 1.2.1.post2 |
+| httpx | 0.28.1 |
+| pandas | 2.3.3 |
+| numpy | 2.4.0 |
+| requests | 2.32.5 |
+| altair | 6.0.0 |
+
+#### Formatter / Linter
+| ツール | バージョン |
+|--------|-----------|
+| black | 26.1.0 |
+| ruff | 0.14.13 |
+
+※ 全ライブラリの正確なバージョンは `requirements-lock.txt` を参照してください。
 
 ---
 
 ## 今後の拡張案
+
 - 実行ログ保存（監査・統制対応）
 - デモ用モックデータモード
 - IPA様式に準拠した Word / PDF レポート出力
@@ -96,6 +173,9 @@ yaml
 
 ---
 
-## 注意
-本ツールは学習・検証目的で作成したものです。  
-診断・外部ツールの実行は、**必ず許可を得た環境に対してのみ**行ってください。
+## ⚠️ 注意
+
+本ツールは **学習・検証目的** で作成したものです。
+
+診断・外部ツールの実行は、  
+**必ず許可を得た環境に対してのみ** 行ってください。
